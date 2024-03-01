@@ -25,5 +25,9 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
+  },
+  esbuild: {
+    pure: ['console.log'],
+    drop: ['debugger']
   }
 })
