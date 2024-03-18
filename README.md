@@ -1,52 +1,31 @@
-# template
+# README
 
-This template should help get you started developing with Vue 3 in Vite.
+这是一个基于 Vue 3 的模板项目，搭建过程可见[这里](https://hf-xz.github.io/articles/library/frontend/vue/)。
 
-## Recommended IDE Setup
+功能列表如下：
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+- 核心功能
+  - Pinia： 状态管理
+  - Vue Router： 路由管理
+  - Vitest： 单元测试
+  - Vuetify：组件库
+- 实用功能
+  - Eslint： 代码质量检测
+  - Prettier： 代码格式化
+  - 自动检查提交代码
+  - 自动引入api、组件、图标
+  - 自动剔除生产环境 `console.log`
+- TODO
+  - 网络请求封装
+  - 应用配置加载
 
-## Type Support for `.vue` Imports in TS
+## 资源网站
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
+- [Vuetify 组件库](https://vuetifyjs.com/zh-Hans/components/all/)
+- [浏览器调试插件](https://devtools.vuejs.org)
 
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
+## Problems
 
-1. Disable the built-in TypeScript Extension
-    1) Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-    2) Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
+### 安装依赖后 eslint 报错
 
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
-
-```sh
-yarn
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-yarn dev
-```
-
-### Type-Check, Compile and Minify for Production
-
-```sh
-yarn build
-```
-
-### Run Unit Tests with [Vitest](https://vitest.dev/)
-
-```sh
-yarn test:unit
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-yarn lint
-```
+由于 yarn 的某些版本管理问题，本项目在添加新的依赖后，需要执行 `rm yarn.lock && yarn` 来使 eslint 相关的依赖版本正确。
