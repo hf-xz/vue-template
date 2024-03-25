@@ -15,7 +15,16 @@ export default defineConfig({
     vue(),
     vueJsx(),
     AutoImport({
-      imports: ['vue', 'vue-router', 'pinia', 'vitest'],
+      imports: [
+        'vue',
+        'vue-router',
+        'pinia',
+        'vitest',
+        {
+          'vue-toastification': ['Toast', 'useToast']
+        }
+      ],
+      dirs: ['src/stores'],
       dts: true
     }),
     Components({
