@@ -45,5 +45,6 @@ export default defineConfig({
   esbuild: {
     pure: ['console.log'],
     drop: ['debugger']
-  }
+  },
+  envDir: 'config'
 })
