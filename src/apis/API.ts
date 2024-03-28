@@ -1,4 +1,4 @@
-// API 实例工厂
+// Api 实例工厂
 
 import type { AxiosInstance, AxiosResponse, AxiosError, AxiosRequestConfig } from 'axios'
 import type { PluginOptions as ToastOptions } from 'vue-toastification'
@@ -6,8 +6,8 @@ import axios from 'axios'
 import toast from '@/plugins/toast'
 
 /**
- * API 配置
- * @param name API 名称
+ * Api 配置
+ * @param name Api 名称
  * @param useToken 是否使用 token，默认 false
  * @param getToken 获取 token 的方法，默认 localStorage
  * @param saveToken 保存 token 的方法，默认 localStorage
@@ -15,10 +15,8 @@ import toast from '@/plugins/toast'
  * @param toastOptions toast 配置，默认全局配置
  * @param toastSuccessMessage 成功 toast 消息，默认返回 response.data.message 或 '请求成功'
  * @param toastErrorMessage 失败 toast 消息，默认返回 error.response.data.message 或 '请求失败'
- * @param requestInterceptor 请求拦截器，默认无
- * @param responseInterceptor 响应拦截器，默认无
  */
-export interface APIConfig {
+export interface ApiConfig {
   name: string
   axiosOptions?: AxiosRequestConfig
   useToken?: boolean
@@ -26,10 +24,8 @@ export interface APIConfig {
   saveToken?: (token: string) => void
   toastLevel?: ToastLevel
   toastOptions?: ToastOptions
-  toastSuccessMessage?: (respones: AxiosResponse) => string
-  toastErrorMessage?: (error: AxiosError) => string
-  requestInterceptor?: Parameters<AxiosInstance['interceptors']['request']['use']>
-  responseInterceptor?: Parameters<AxiosInstance['interceptors']['response']['use']>
+  getSuccessMessage?: (respones: AxiosResponse) => string
+  getErrorMessage?: (error: AxiosError) => string
 }
 
 // toast 等级
@@ -44,13 +40,13 @@ const defualtAxiosOptions: AxiosRequestConfig = {
   timeout: 10000
 }
 
-// 声明 API class
-export class API {
-  readonly config: APIConfig
+// 声明 Api class
+export class Api {
+  readonly config: ApiConfig
+  readonly toast: ReturnType<typeof useToast>
   private axios: AxiosInstance
-  private toast: ReturnType<typeof useToast>
 
-  constructor(config: APIConfig) {
+  constructor(config: ApiConfig) {
     // 配置
     this.config = {
       axiosOptions: defualtAxiosOptions,
@@ -63,10 +59,10 @@ export class API {
       config.getToken ?? (() => localStorage.getItem(`api-${this.config.name}-token`) ?? '')
     this.config.saveToken =
       config.saveToken ?? ((token) => localStorage.setItem(`api-${this.config.name}-token`, token))
-    this.config.toastSuccessMessage =
-      config.toastSuccessMessage ?? ((response) => response.data.message || '请求成功')
-    this.config.toastErrorMessage =
-      config.toastErrorMessage ??
+    this.config.getSuccessMessage =
+      config.getSuccessMessage ?? ((response) => response.data.message || '请求成功')
+    this.config.getErrorMessage =
+      config.getErrorMessage ??
       ((error) =>
         '请求失败：' + error.message ||
         (error.response?.data as { message?: string }).message ||
@@ -83,9 +79,6 @@ export class API {
   private init() {
     // axios
     // --- 请求拦截器 ---
-    if (this.config.requestInterceptor) {
-      this.axios.interceptors.request.use(...this.config.requestInterceptor)
-    }
     // 添加 token
     if (this.config.useToken) {
       this.axios.interceptors.request.use((config) => {
@@ -94,19 +87,16 @@ export class API {
       })
     }
     // --- 响应拦截器 ---
-    if (this.config.responseInterceptor) {
-      this.axios.interceptors.response.use(...this.config.responseInterceptor)
-    }
     this.axios.interceptors.response.use(
       (response) => {
         if (this.config.toastLevel! >= ToastLevel.all) {
-          this.toast.success(this.config.toastSuccessMessage!(response))
+          this.toast.success(this.config.getSuccessMessage!(response))
         }
         return response
       },
       (error) => {
         if (this.config.toastLevel! >= ToastLevel.error) {
-          this.toast.error(this.config.toastErrorMessage!(error))
+          this.toast.error(this.config.getErrorMessage!(error))
         }
         return Promise.reject(error)
       }
@@ -128,5 +118,15 @@ export class API {
 
   delete<T = any>(url: string, config?: AxiosRequestConfig) {
     return this.axios.delete<T>(url, config)
+  }
+
+  // 配置拦截器
+  setRequestInterceptor(interceptor: Parameters<AxiosInstance['interceptors']['request']['use']>) {
+    this.axios.interceptors.request.use(...interceptor)
+  }
+  setResponseInterceptor(
+    interceptor: Parameters<AxiosInstance['interceptors']['response']['use']>
+  ) {
+    this.axios.interceptors.response.use(...interceptor)
   }
 }
